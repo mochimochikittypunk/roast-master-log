@@ -1,5 +1,9 @@
 'use client';
 
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Smartphone, Monitor } from 'lucide-react';
+
 import { ControlPanel } from "@/components/roast/control-panel";
 import { TimerDisplay } from "@/components/roast/timer-display";
 import { ChartBoard } from "@/components/roast/chart-board";
@@ -8,30 +12,51 @@ import { ManualInput } from "@/components/roast/manual-input";
 import { LogSelector } from "@/components/roast/log-selector";
 
 export default function RoastPage() {
+    const [isMobileView, setIsMobileView] = useState(false);
+
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 h-full">
-            {/* Header / Timer Area */}
-            <div className="lg:col-span-4 flex justify-between items-center bg-slate-900 p-4 rounded-xl border border-slate-800">
-                <div className="flex items-center gap-4">
-                    <h1 className="text-2xl font-bold text-amber-500">Roast Master Log</h1>
-                    <ManualInput />
-                    <LogSelector />
-                </div>
-                <TimerDisplay />
+        <div className={`h-full transition-all duration-300 ${isMobileView ? 'max-w-md mx-auto' : ''}`}>
+            {/* View Toggle */}
+            <div className="fixed bottom-4 right-4 z-50">
+                <Button
+                    onClick={() => setIsMobileView(!isMobileView)}
+                    variant="outline"
+                    size="icon"
+                    className="rounded-full bg-slate-800 border-slate-700 shadow-xl"
+                    title={isMobileView ? "Switch to Desktop View" : "Switch to Mobile View"}
+                >
+                    {isMobileView ? <Monitor className="h-5 w-5" /> : <Smartphone className="h-5 w-5" />}
+                </Button>
             </div>
 
-            {/* Main Chart Area */}
-            <div className="lg:col-span-3 bg-slate-900 p-4 rounded-xl border border-slate-800 min-h-[500px]">
-                <ChartBoard />
-            </div>
+            <div className={`grid gap-4 ${isMobileView ? 'grid-cols-1' : 'grid-cols-1 lg:grid-cols-4'}`}>
+                {/* Header / Timer Area */}
+                <div className={`${isMobileView ? 'col-span-1 flex-col items-stretch gap-4' : 'lg:col-span-4 flex justify-between items-center'} bg-slate-900 p-4 rounded-xl border border-slate-800`}>
+                    <div className={`flex items-center gap-4 ${isMobileView ? 'justify-between' : ''}`}>
+                        <h1 className={`${isMobileView ? 'text-xl' : 'text-2xl'} font-bold text-amber-500`}>Roast Master</h1>
+                        {isMobileView && <TimerDisplay compact={true} />}
+                    </div>
 
-            {/* Controls & Metrics */}
-            <div className="lg:col-span-1 flex flex-col gap-4">
-                <div className="bg-slate-900 p-4 rounded-xl border border-slate-800 flex-1">
-                    <MetricsPanel />
+                    <div className={`flex items-center gap-2 ${isMobileView ? 'justify-between' : ''}`}>
+                        <ManualInput />
+                        <LogSelector />
+                    </div>
                 </div>
-                <div className="bg-slate-900 p-4 rounded-xl border border-slate-800">
-                    <ControlPanel />
+
+                {/* Main Chart Area */}
+                <div className={`${isMobileView ? 'col-span-1 h-[350px]' : 'lg:col-span-3 min-h-[500px]'} bg-slate-900 p-4 rounded-xl border border-slate-800`}>
+                    <ChartBoard />
+                </div>
+
+                {/* Controls & Metrics */}
+                <div className={`${isMobileView ? 'col-span-1' : 'lg:col-span-1'} flex flex-col gap-4 pb-20`}>
+                    {!isMobileView && <TimerDisplay />}
+                    <div className="bg-slate-900 p-4 rounded-xl border border-slate-800 flex-1">
+                        <MetricsPanel />
+                    </div>
+                    <div className="bg-slate-900 p-4 rounded-xl border border-slate-800">
+                        <ControlPanel />
+                    </div>
                 </div>
             </div>
         </div>
