@@ -27,7 +27,7 @@ export const ManualInput = () => {
             <Input
                 autoFocus
                 type="number"
-                placeholder="Temp"
+                placeholder="豆の温度"
                 value={manualTemp}
                 onChange={(e) => setManualTemp(e.target.value)}
                 className="bg-slate-950 border-slate-700 text-lg h-12 w-24 font-mono text-right"
@@ -36,7 +36,7 @@ export const ManualInput = () => {
                 }}
             />
             <Button onClick={handleManualAdd} className="h-12 bg-slate-700 font-bold px-4">
-                ADD
+                記録
             </Button>
         </div>
     );

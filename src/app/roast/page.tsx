@@ -14,6 +14,7 @@ import { GuideDialog } from "@/components/roast/guide-dialog";
 
 export default function RoastPage() {
     const [isMobileView, setIsMobileView] = useState(false);
+    const [showMobileChart, setShowMobileChart] = useState(false);
 
     return (
         <div className={`h-full transition-all duration-300 ${isMobileView ? 'max-w-md mx-auto' : ''}`}>
@@ -46,9 +47,21 @@ export default function RoastPage() {
                 </div>
 
                 {/* Main Chart Area */}
-                <div className={`${isMobileView ? 'col-span-1 h-[350px]' : 'lg:col-span-3 min-h-[500px]'} bg-slate-900 p-4 rounded-xl border border-slate-800`}>
+                <div className={`${isMobileView ? (showMobileChart ? 'col-span-1 h-[350px]' : 'hidden') : 'lg:col-span-3 min-h-[500px]'} bg-slate-900 p-4 rounded-xl border border-slate-800 transition-all`}>
                     <ChartBoard />
                 </div>
+
+                {/* Mobile Chart Toggle */}
+                {isMobileView && (
+                    <div className="col-span-1">
+                        <Button
+                            onClick={() => setShowMobileChart(!showMobileChart)}
+                            className="w-full bg-indigo-600 hover:bg-indigo-700"
+                        >
+                            {showMobileChart ? 'グラフを隠す' : 'グラフを表示'}
+                        </Button>
+                    </div>
+                )}
 
                 {/* Controls & Metrics */}
                 <div className={`${isMobileView ? 'col-span-1' : 'lg:col-span-1'} flex flex-col gap-4 pb-20`}>
