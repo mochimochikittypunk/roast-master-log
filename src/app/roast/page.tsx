@@ -10,6 +10,7 @@ import { ChartBoard } from "@/components/roast/chart-board";
 import { MetricsPanel } from "@/components/roast/metrics-panel";
 import { ManualInput } from "@/components/roast/manual-input";
 import { LogSelector } from "@/components/roast/log-selector";
+import { GuideDialog } from "@/components/roast/guide-dialog";
 
 export default function RoastPage() {
     const [isMobileView, setIsMobileView] = useState(false);
@@ -40,6 +41,7 @@ export default function RoastPage() {
                     <div className={`flex items-center gap-2 ${isMobileView ? 'justify-between' : ''}`}>
                         <ManualInput />
                         <LogSelector />
+                        <GuideDialog />
                     </div>
                 </div>
 
