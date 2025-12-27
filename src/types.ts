@@ -5,6 +5,7 @@ export interface DataPoint {
     temperature: number; // BT (Bean Temp)
     ror?: number; // Rate of Rise (derived)
     gas?: number; // Gas Pressure
+    damper?: number; // Damper % (0-100)
 }
 
 export interface RoastEvent {

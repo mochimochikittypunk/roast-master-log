@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { HelpCircle } from 'lucide-react';
 import Image from 'next/image';
@@ -78,7 +78,15 @@ export const GuideDialog = ({ compact = false }: { compact?: boolean }) => {
                         </div>
                     </div>
                 </div>
-            </DialogContent>
-        </Dialog>
+            </div>
+            <DialogFooter className="mt-4 sm:justify-center">
+                <DialogClose asChild>
+                    <Button type="button" variant="secondary" className="w-full sm:w-auto min-w-[100px]">
+                        閉じる
+                    </Button>
+                </DialogClose>
+            </DialogFooter>
+        </DialogContent>
+        </Dialog >
     );
 };

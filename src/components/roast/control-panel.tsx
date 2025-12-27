@@ -13,6 +13,7 @@ export const ControlPanel = () => {
         isRunning, start, stop,
         time, addReading, logEvent,
         currentGas, setGas,
+        currentDamper, setDamper,
         dataPoints, events, dtr,
         // Use shared manual input
         manualTemp, setManualTemp
@@ -129,12 +130,22 @@ export const ControlPanel = () => {
                         Input temp at top bar, then click Event
                     </div>
 
-                    <div className="space-y-2 pt-4 border-t border-slate-800">
-                        <label className="text-xs text-slate-500 font-bold uppercase">Gas Control</label>
-                        <div className="flex gap-2 items-center">
-                            <Button onClick={() => setGas(Math.max(0, parseFloat((currentGas - 0.1).toFixed(1))))} size="icon" variant="outline">-</Button>
-                            <div className="flex-1 text-center font-mono font-bold text-xl">{currentGas.toFixed(1)}</div>
-                            <Button onClick={() => setGas(parseFloat((currentGas + 0.1).toFixed(1)))} size="icon" variant="outline">+</Button>
+                    <div className="space-y-2 pt-4 border-t border-slate-800 grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <label className="text-xs text-slate-500 font-bold uppercase block text-center">Gas</label>
+                            <div className="flex gap-1 items-center justify-center">
+                                <Button onClick={() => setGas(Math.max(0, parseFloat((currentGas - 0.1).toFixed(1))))} size="icon" variant="outline" className="h-8 w-8">-</Button>
+                                <div className="w-12 text-center font-mono font-bold text-lg">{currentGas.toFixed(1)}</div>
+                                <Button onClick={() => setGas(parseFloat((currentGas + 0.1).toFixed(1)))} size="icon" variant="outline" className="h-8 w-8">+</Button>
+                            </div>
+                        </div>
+                        <div className="space-y-2 border-l border-slate-800 pl-4">
+                            <label className="text-xs text-slate-500 font-bold uppercase block text-center">Damper (%)</label>
+                            <div className="flex gap-1 items-center justify-center">
+                                <Button onClick={() => setDamper(Math.max(0, currentDamper - 10))} size="icon" variant="outline" className="h-8 w-8">-</Button>
+                                <div className="w-12 text-center font-mono font-bold text-lg">{currentDamper}</div>
+                                <Button onClick={() => setDamper(Math.min(100, currentDamper + 10))} size="icon" variant="outline" className="h-8 w-8">+</Button>
+                            </div>
                         </div>
                     </div>
                 </>

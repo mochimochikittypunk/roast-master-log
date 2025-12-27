@@ -20,6 +20,8 @@ interface RoastContextType {
     events: RoastEvent[];
     currentGas: number;
     setGas: (v: number) => void;
+    currentDamper: number;
+    setDamper: (v: number) => void;
     addReading: (t: number, temp: number) => void;
     logEvent: (name: string, t: number, temp: number, type: RoastEvent['type']) => void;
 
