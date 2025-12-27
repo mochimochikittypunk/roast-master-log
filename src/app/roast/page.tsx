@@ -39,10 +39,21 @@ export default function RoastPage() {
                         {isMobileView && <TimerDisplay compact={true} />}
                     </div>
 
-                    <div className={`flex items-center gap-2 ${isMobileView ? 'justify-between' : ''}`}>
+                    <div className={`flex items-start gap-2 ${isMobileView ? 'justify-between' : 'items-center'}`}>
                         <ManualInput />
-                        <LogSelector />
-                        <GuideDialog />
+
+                        {/* Right side controls - Stack vertical on mobile */}
+                        {isMobileView ? (
+                            <div className="flex flex-col gap-2">
+                                <LogSelector compact />
+                                <GuideDialog compact />
+                            </div>
+                        ) : (
+                            <>
+                                <LogSelector />
+                                <GuideDialog />
+                            </>
+                        )}
                     </div>
                 </div>
 

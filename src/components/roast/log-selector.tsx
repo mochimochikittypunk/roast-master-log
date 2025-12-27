@@ -16,7 +16,7 @@ interface LogSummary {
     dtr: string;
 }
 
-export const LogSelector = () => {
+export const LogSelector = ({ compact = false }: { compact?: boolean }) => {
     const { setReferenceData } = useRoast();
     const [isOpen, setIsOpen] = useState(false);
     const [logs, setLogs] = useState<LogSummary[]>([]);
@@ -67,8 +67,12 @@ export const LogSelector = () => {
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                <Button variant="outline" className="border-slate-700 hover:bg-slate-800 text-slate-400">
-                    <FileClock className="mr-2 h-4 w-4" /> Compare
+                <Button
+                    variant="outline"
+                    size={compact ? "sm" : "default"}
+                    className={`border-slate-700 hover:bg-slate-800 text-slate-400 ${compact ? 'h-8 text-xs px-2 w-full justify-center' : ''}`}
+                >
+                    <FileClock className={`${compact ? 'mr-1 h-3 w-3' : 'mr-2 h-4 w-4'}`} /> Compare
                 </Button>
             </DialogTrigger>
             <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto bg-slate-900 border-slate-800">

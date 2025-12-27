@@ -6,11 +6,16 @@ import { Button } from '@/components/ui/button';
 import { HelpCircle } from 'lucide-react';
 import Image from 'next/image';
 
-export const GuideDialog = () => {
+export const GuideDialog = ({ compact = false }: { compact?: boolean }) => {
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button variant="outline" size="sm" className="text-xs font-bold border-slate-600 text-slate-300 hover:text-amber-400 hover:border-amber-400 ml-2 h-8" title="使い方ガイド">
+                <Button
+                    variant="outline"
+                    size="sm"
+                    className={`text-xs font-bold border-slate-600 text-slate-300 hover:text-amber-400 hover:border-amber-400 h-8 ${compact ? 'w-full justify-center' : ''}`}
+                    title="使い方ガイド"
+                >
                     使い方
                 </Button>
             </DialogTrigger>
