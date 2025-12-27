@@ -78,15 +78,15 @@ export const GuideDialog = ({ compact = false }: { compact?: boolean }) => {
                         </div>
                     </div>
                 </div>
-            </div>
-            <DialogFooter className="mt-4 sm:justify-center">
-                <DialogClose asChild>
-                    <Button type="button" variant="secondary" className="w-full sm:w-auto min-w-[100px]">
-                        閉じる
-                    </Button>
-                </DialogClose>
-            </DialogFooter>
-        </DialogContent>
+
+                <DialogFooter className="mt-4 sm:justify-center">
+                    <DialogClose asChild>
+                        <Button type="button" variant="secondary" className="w-full sm:w-auto min-w-[100px]">
+                            閉じる
+                        </Button>
+                    </DialogClose>
+                </DialogFooter>
+            </DialogContent>
         </Dialog >
     );
 };
