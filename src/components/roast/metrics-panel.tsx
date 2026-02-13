@@ -4,7 +4,7 @@ import { useRoast } from "@/context/roast-context";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export const MetricsPanel = () => {
-    const { dtr, chartDataPoints, currentGas, currentRoRPerSecond } = useRoast();
+    const { dtr, chartDataPoints, currentGas, currentRoRPerSecond, phaseRatios } = useRoast();
 
     // Get latest reading (including interpolated for real-time display)
     const latest = chartDataPoints[chartDataPoints.length - 1] || { temperature: 0, ror: 0, isInterpolated: false };
@@ -42,12 +42,19 @@ export const MetricsPanel = () => {
 
             <Card className="bg-slate-950 border-slate-800">
                 <CardHeader className="pb-1 pt-3 px-3">
-                    <CardTitle className="text-xs text-slate-400 font-medium">DTR</CardTitle>
+                    <CardTitle className="text-xs text-slate-400 font-medium">Phase Ratio</CardTitle>
                 </CardHeader>
                 <CardContent className="pb-3 px-3">
                     <div className="text-2xl font-bold text-purple-400">
-                        {dtr.toFixed(1)}%
+                        DTR {dtr.toFixed(1)}%
                     </div>
+                    {phaseRatios.development > 0 && (
+                        <div className="mt-1 flex h-2 rounded overflow-hidden">
+                            <div className="bg-yellow-500" style={{ width: `${phaseRatios.drying}%` }} />
+                            <div className="bg-orange-500" style={{ width: `${phaseRatios.maillard}%` }} />
+                            <div className="bg-red-600" style={{ width: `${phaseRatios.development}%` }} />
+                        </div>
+                    )}
                 </CardContent>
             </Card>
 

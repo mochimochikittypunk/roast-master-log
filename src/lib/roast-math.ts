@@ -94,3 +94,24 @@ export const interpolateTemperature = (
 ): number => {
     return baseTemp + rorPerSecond * elapsedSeconds;
 };
+
+/**
+ * Estimate the timestamp when Bean Temp reached a target temperature (default: 140°C).
+ * Used to auto-estimate Yellow Point when the user skips the Yellow button.
+ * Scans recorded dataPoints and linearly interpolates between the two points
+ * surrounding the target temperature.
+ */
+export const estimateYellowTime = (
+    dataPoints: DataPoint[],
+    targetTemp: number = 140
+): number | null => {
+    for (let i = 1; i < dataPoints.length; i++) {
+        const prev = dataPoints[i - 1];
+        const curr = dataPoints[i];
+        if (prev.temperature < targetTemp && curr.temperature >= targetTemp) {
+            const ratio = (targetTemp - prev.temperature) / (curr.temperature - prev.temperature);
+            return prev.timestamp + ratio * (curr.timestamp - prev.timestamp);
+        }
+    }
+    return null;
+};

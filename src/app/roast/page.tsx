@@ -2,19 +2,32 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Smartphone, Monitor } from 'lucide-react';
+import { Smartphone, Monitor, Undo2 } from 'lucide-react';
 
 import { ControlPanel } from "@/components/roast/control-panel";
 import { TimerDisplay } from "@/components/roast/timer-display";
 import { ChartBoard } from "@/components/roast/chart-board";
 import { MetricsPanel } from "@/components/roast/metrics-panel";
 import { ManualInput } from "@/components/roast/manual-input";
-import { LogSelector } from "@/components/roast/log-selector";
 import { GuideDialog } from "@/components/roast/guide-dialog";
+import { useRoast } from "@/context/roast-context";
 
 export default function RoastPage() {
     const [isMobileView, setIsMobileView] = useState(false);
     const [showMobileChart, setShowMobileChart] = useState(false);
+    const { undoLastReading, dataPoints } = useRoast();
+
+    const UndoButton = ({ compact = false }: { compact?: boolean }) => (
+        <Button
+            onClick={undoLastReading}
+            variant="outline"
+            size={compact ? "sm" : "default"}
+            className={`border-slate-700 hover:bg-slate-800 text-slate-400 ${compact ? 'h-8 text-xs px-2 w-full justify-center' : ''}`}
+            disabled={dataPoints.length <= 1}
+        >
+            <Undo2 className={`${compact ? 'mr-1 h-3 w-3' : 'mr-2 h-4 w-4'}`} /> Undo
+        </Button>
+    );
 
     return (
         <div className={`h-full transition-all duration-300 ${isMobileView ? 'max-w-md mx-auto' : ''}`}>
@@ -45,12 +58,12 @@ export default function RoastPage() {
                         {/* Right side controls - Stack vertical on mobile */}
                         {isMobileView ? (
                             <div className="flex flex-col gap-2">
-                                <LogSelector compact />
+                                <UndoButton compact />
                                 <GuideDialog compact />
                             </div>
                         ) : (
                             <>
-                                <LogSelector />
+                                <UndoButton />
                                 <GuideDialog />
                             </>
                         )}
@@ -88,3 +101,4 @@ export default function RoastPage() {
         </div>
     );
 }
+

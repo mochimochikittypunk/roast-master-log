@@ -3,7 +3,7 @@
 import React, { createContext, useContext, ReactNode } from 'react';
 import { useRoastTimer } from '@/hooks/useRoastTimer';
 import { useRoastData } from '@/hooks/useRoastData';
-import { useRoastingMath } from '@/hooks/useRoastingMath';
+import { useRoastingMath, PhaseRatios } from '@/hooks/useRoastingMath';
 import { useInterpolation } from '@/hooks/useInterpolation';
 import { DataPoint, RoastEvent, RoastPhase } from '@/types';
 
@@ -31,6 +31,7 @@ interface RoastContextType {
     currentPhase: RoastPhase;
     dtr: number;
     getEstimatedEndTime: (target: number) => number | null;
+    phaseRatios: PhaseRatios;
 
     // Interpolation
     currentRoRPerSecond: number | null;
@@ -40,9 +41,8 @@ interface RoastContextType {
     setManualTemp: (v: string) => void;
     handleManualAdd: () => void;
 
-    // Reference Data (Comparison)
-    referenceData: DataPoint[];
-    setReferenceData: (data: DataPoint[]) => void;
+    // Undo
+    undoLastReading: () => void;
 }
 
 const RoastContext = createContext<RoastContextType | null>(null);
@@ -50,7 +50,7 @@ const RoastContext = createContext<RoastContextType | null>(null);
 export const RoastProvider = ({ children }: { children: ReactNode }) => {
     const timer = useRoastTimer();
     const data = useRoastData();
-    const math = useRoastingMath(timer.time, data.events);
+    const math = useRoastingMath(timer.time, data.events, data.dataPoints);
     const interpolation = useInterpolation(data.dataPoints, timer.time, timer.isRunning);
 
     // Lifted UI State for Manual Input

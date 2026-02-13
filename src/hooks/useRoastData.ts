@@ -35,19 +35,19 @@ export const useRoastData = () => {
         setCurrentDamper(value);
     }, []);
 
+    const undoLastReading = useCallback(() => {
+        setDataPoints(prev => {
+            if (prev.length <= 1) return prev; // 最初のデータ(Start)は削除不可
+            return prev.slice(0, -1);
+        });
+    }, []);
+
     const resetData = useCallback(() => {
         setDataPoints([]);
         setEvents([]);
-        setEvents([]);
         setCurrentGas(0);
         setCurrentDamper(0);
-        // Do NOT reset reference data automatically? Or maybe yes?
-        // Usually you want to keep the reference for the next roast unless explicitly cleared.
-        // Let's keep it.
     }, []);
-
-    // Reference Data State
-    const [referenceData, setReferenceData] = useState<DataPoint[]>([]);
 
     return {
         dataPoints,
@@ -58,8 +58,7 @@ export const useRoastData = () => {
         setGas,
         setDamper,
         resetData,
-        currentDamper,
-        referenceData,
-        setReferenceData
+        undoLastReading,
+        currentDamper
     };
 };
