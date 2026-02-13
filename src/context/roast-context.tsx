@@ -1,9 +1,10 @@
 'use client';
 
-import React, { createContext, useContext, ReactNode, useEffect } from 'react';
+import React, { createContext, useContext, ReactNode } from 'react';
 import { useRoastTimer } from '@/hooks/useRoastTimer';
 import { useRoastData } from '@/hooks/useRoastData';
 import { useRoastingMath } from '@/hooks/useRoastingMath';
+import { useInterpolation } from '@/hooks/useInterpolation';
 import { DataPoint, RoastEvent, RoastPhase } from '@/types';
 
 interface RoastContextType {
@@ -17,6 +18,7 @@ interface RoastContextType {
 
     // Data
     dataPoints: DataPoint[];
+    chartDataPoints: DataPoint[];
     events: RoastEvent[];
     currentGas: number;
     setGas: (v: number) => void;
@@ -29,6 +31,10 @@ interface RoastContextType {
     currentPhase: RoastPhase;
     dtr: number;
     getEstimatedEndTime: (target: number) => number | null;
+
+    // Interpolation
+    currentRoRPerSecond: number | null;
+
     // UI Binding for Manual Input
     manualTemp: string;
     setManualTemp: (v: string) => void;
@@ -45,6 +51,7 @@ export const RoastProvider = ({ children }: { children: ReactNode }) => {
     const timer = useRoastTimer();
     const data = useRoastData();
     const math = useRoastingMath(timer.time, data.events);
+    const interpolation = useInterpolation(data.dataPoints, timer.time, timer.isRunning);
 
     // Lifted UI State for Manual Input
     const [manualTemp, setManualTemp] = React.useState('');
@@ -62,6 +69,8 @@ export const RoastProvider = ({ children }: { children: ReactNode }) => {
             ...timer,
             ...data,
             ...math,
+            chartDataPoints: interpolation.chartDataPoints,
+            currentRoRPerSecond: interpolation.currentRoRPerSecond,
             manualTemp,
             setManualTemp,
             handleManualAdd

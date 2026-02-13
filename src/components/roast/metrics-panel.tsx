@@ -4,10 +4,10 @@ import { useRoast } from "@/context/roast-context";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export const MetricsPanel = () => {
-    const { dtr, dataPoints, currentGas } = useRoast();
+    const { dtr, chartDataPoints, currentGas, currentRoRPerSecond } = useRoast();
 
-    // Get latest reading
-    const latest = dataPoints[dataPoints.length - 1] || { temperature: 0, ror: 0 };
+    // Get latest reading (including interpolated for real-time display)
+    const latest = chartDataPoints[chartDataPoints.length - 1] || { temperature: 0, ror: 0, isInterpolated: false };
 
     return (
         <div className="grid grid-cols-2 gap-2">
@@ -19,18 +19,24 @@ export const MetricsPanel = () => {
                     <div className="text-2xl font-bold text-amber-500">
                         {latest.temperature.toFixed(1)}°C
                     </div>
+                    {latest.isInterpolated && (
+                        <div className="text-[10px] text-amber-700">予測値</div>
+                    )}
                 </CardContent>
             </Card>
 
             <Card className="bg-slate-950 border-slate-800">
                 <CardHeader className="pb-1 pt-3 px-3">
-                    <CardTitle className="text-xs text-slate-400 font-medium">RoR (30s)</CardTitle>
+                    <CardTitle className="text-xs text-slate-400 font-medium">RoR</CardTitle>
                 </CardHeader>
                 <CardContent className="pb-3 px-3">
                     <div className="text-2xl font-bold text-blue-400">
-                        {latest.ror ? latest.ror.toFixed(1) : '0.0'}
+                        {currentRoRPerSecond !== null
+                            ? (currentRoRPerSecond * 60).toFixed(1)
+                            : (latest.ror ? latest.ror.toFixed(1) : '0.0')
+                        }
                     </div>
-                    {/* <div className="text-[10px] text-slate-500">°C/min</div> */}
+                    <div className="text-[10px] text-slate-500">°C/min</div>
                 </CardContent>
             </Card>
 

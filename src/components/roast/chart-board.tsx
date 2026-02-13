@@ -13,8 +13,25 @@ import {
     ReferenceLine
 } from 'recharts';
 
+// Custom dot renderer: show dots only for manual (non-interpolated) points
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const ManualPointDot = (props: any) => {
+    const { cx, cy, payload } = props;
+    if (payload?.isInterpolated) return null;
+    return (
+        <circle
+            cx={cx}
+            cy={cy}
+            r={4}
+            stroke="#fbbf24"
+            strokeWidth={2}
+            fill="#fbbf24"
+        />
+    );
+};
+
 export const ChartBoard = () => {
-    const { dataPoints, events, referenceData } = useRoast();
+    const { chartDataPoints, events, referenceData } = useRoast();
 
     // Custom Tooltip
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -25,7 +42,8 @@ export const ChartBoard = () => {
                     <p className="text-slate-300 text-xs mb-1">{`Time: ${Math.floor(label / 60)}:${(label % 60).toString().padStart(2, '0')}`}</p>
                     {payload.map((entry: any) => (
                         <p key={entry.name} style={{ color: entry.color }} className="text-sm font-bold">
-                            {entry.name}: {entry.value.toFixed(1)}
+                            {entry.name}: {entry.value?.toFixed(1)}
+                            {entry.payload?.isInterpolated && entry.name === 'Bean Temp' ? ' (予測)' : ''}
                         </p>
                     ))}
                 </div>
@@ -38,7 +56,7 @@ export const ChartBoard = () => {
         <div className="w-full h-[500px]">
             <ResponsiveContainer width="100%" height="100%">
                 <ComposedChart
-                    data={dataPoints}
+                    data={chartDataPoints}
                     margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
                 >
                     <CartesianGrid stroke="#334155" strokeDasharray="3 3" vertical={false} />
@@ -84,7 +102,7 @@ export const ChartBoard = () => {
                         name="Bean Temp"
                         stroke="#fbbf24"
                         strokeWidth={4}
-                        dot={{ r: 4, strokeWidth: 2 }}
+                        dot={<ManualPointDot />}
                         activeDot={{ r: 6 }}
                         isAnimationActive={false}
                     />

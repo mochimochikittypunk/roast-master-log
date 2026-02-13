@@ -6,6 +6,7 @@ export interface DataPoint {
     ror?: number; // Rate of Rise (derived)
     gas?: number; // Gas Pressure
     damper?: number; // Damper % (0-100)
+    isInterpolated?: boolean; // true = auto-generated from RoR interpolation
 }
 
 export interface RoastEvent {

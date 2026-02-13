@@ -67,3 +67,30 @@ export const estimateFinishTime = (
     // Total = 600 / (1 - 0.20) = 600 / 0.8 = 750s
     return fcStartTime / (1 - ratio);
 };
+
+/**
+ * Calculate RoR in °C per second between two data points.
+ * Used for interpolation between manual readings.
+ */
+export const calculateRoRPerSecond = (
+    prevTemp: number,
+    prevTime: number,
+    currTemp: number,
+    currTime: number
+): number => {
+    const dt = currTime - prevTime;
+    if (dt <= 0) return 0;
+    return (currTemp - prevTemp) / dt;
+};
+
+/**
+ * Interpolate temperature based on a base temperature and RoR.
+ * Returns predicted temperature at baseTemp + rorPerSecond * elapsed.
+ */
+export const interpolateTemperature = (
+    baseTemp: number,
+    rorPerSecond: number,
+    elapsedSeconds: number
+): number => {
+    return baseTemp + rorPerSecond * elapsedSeconds;
+};
