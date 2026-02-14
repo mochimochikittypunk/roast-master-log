@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { DataPoint } from '@/types';
-import { calculateRoRPerSecond, interpolateTemperature } from '@/lib/roast-math';
+import { calculateRoRPerSecond, interpolateTemperature, calculateRoRChangeRate, interpolateRoR } from '@/lib/roast-math';
 
 /**
  * useInterpolation - Generates interpolated chart data points between manual readings.
@@ -30,6 +30,12 @@ export const useInterpolation = (
             prev.temperature, prev.timestamp,
             curr.temperature, curr.timestamp
         );
+    }, [manualDataPoints]);
+
+    // Calculate RoR change rate (RoR-of-RoR) from last 3 manual points
+    // This is used internally for interpolation only, not exposed to frontend
+    const currentRoRChangeRate = useMemo(() => {
+        return calculateRoRChangeRate(manualDataPoints);
     }, [manualDataPoints]);
 
     // Get the last manual data point info for interpolation base
@@ -80,10 +86,17 @@ export const useInterpolation = (
                     elapsed
                 );
 
+                // Dynamic RoR: base RoR + change rate × elapsed
+                const dynamicRoR = interpolateRoR(
+                    currentRoRPerSecond * 60, // base RoR in °C/min
+                    currentRoRChangeRate,
+                    elapsed
+                );
+
                 const newPoint: DataPoint = {
                     timestamp: nextTimestamp,
                     temperature: parseFloat(predictedTemp.toFixed(1)),
-                    ror: currentRoRPerSecond * 60, // Convert to °C/min for display
+                    ror: parseFloat(dynamicRoR.toFixed(1)),
                     gas: lastManualPoint.gas,
                     damper: lastManualPoint.damper,
                     isInterpolated: true,
@@ -99,7 +112,7 @@ export const useInterpolation = (
                 intervalRef.current = null;
             }
         };
-    }, [isRunning, currentRoRPerSecond, lastManualPoint]);
+    }, [isRunning, currentRoRPerSecond, currentRoRChangeRate, lastManualPoint]);
 
     // Cleanup on unmount
     useEffect(() => {

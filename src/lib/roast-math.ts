@@ -115,3 +115,43 @@ export const estimateYellowTime = (
     }
     return null;
 };
+
+/**
+ * Calculate RoR change rate (RoR-of-RoR) in °C/min per second.
+ * Uses last 3 manual data points to determine how RoR is changing over time.
+ * This value is used internally for interpolation and NOT displayed on the frontend.
+ */
+export const calculateRoRChangeRate = (
+    dataPoints: DataPoint[]
+): number => {
+    if (dataPoints.length < 3) return 0;
+
+    const p1 = dataPoints[dataPoints.length - 3];
+    const p2 = dataPoints[dataPoints.length - 2];
+    const p3 = dataPoints[dataPoints.length - 1];
+
+    // RoR between p1-p2 (°C/min)
+    const dt1 = p2.timestamp - p1.timestamp;
+    const ror1 = dt1 > 0 ? ((p2.temperature - p1.temperature) / dt1) * 60 : 0;
+
+    // RoR between p2-p3 (°C/min)
+    const dt2 = p3.timestamp - p2.timestamp;
+    const ror2 = dt2 > 0 ? ((p3.temperature - p2.temperature) / dt2) * 60 : 0;
+
+    // RoR change rate (°C/min per second)
+    const totalDt = (p3.timestamp - p1.timestamp) / 2; // midpoint-to-midpoint seconds
+    if (totalDt <= 0) return 0;
+    return (ror2 - ror1) / totalDt;
+};
+
+/**
+ * Interpolate RoR value based on base RoR and its change rate.
+ * Returns predicted RoR (°C/min) at the given elapsed time.
+ */
+export const interpolateRoR = (
+    baseRoR: number,
+    rorChangeRate: number,
+    elapsedSeconds: number
+): number => {
+    return baseRoR + rorChangeRate * elapsedSeconds;
+};
