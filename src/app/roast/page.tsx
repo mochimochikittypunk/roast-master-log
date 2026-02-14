@@ -15,15 +15,15 @@ import { useRoast } from "@/context/roast-context";
 export default function RoastPage() {
     const [isMobileView, setIsMobileView] = useState(false);
     const [showMobileChart, setShowMobileChart] = useState(false);
-    const { undoLastReading, dataPoints } = useRoast();
+    const { undoLast, canUndo } = useRoast();
 
     const UndoButton = ({ compact = false }: { compact?: boolean }) => (
         <Button
-            onClick={undoLastReading}
+            onClick={undoLast}
             variant="outline"
             size={compact ? "sm" : "default"}
             className={`border-slate-700 hover:bg-slate-800 text-slate-400 ${compact ? 'h-8 text-xs px-2 w-full justify-center' : ''}`}
-            disabled={dataPoints.length <= 1}
+            disabled={!canUndo}
         >
             <Undo2 className={`${compact ? 'mr-1 h-3 w-3' : 'mr-2 h-4 w-4'}`} /> Undo
         </Button>

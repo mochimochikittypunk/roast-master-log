@@ -42,7 +42,8 @@ interface RoastContextType {
     handleManualAdd: () => void;
 
     // Undo
-    undoLastReading: () => void;
+    undoLast: () => void;
+    canUndo: boolean;
 }
 
 const RoastContext = createContext<RoastContextType | null>(null);
