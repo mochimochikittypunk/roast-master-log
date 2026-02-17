@@ -85,14 +85,21 @@ export const ChartBoard = () => {
                             stroke="#fbbf24"
                         />
 
-                        {/* Right Axis: RoR / Gas */}
                         <YAxis
                             yAxisId="right"
                             orientation="right"
-                            domain={[-20, 30]}
+                            domain={[0, 30]}
                             allowDataOverflow={true}
-                            label={{ value: 'RoR / Gas', angle: 90, position: 'insideRight', fill: '#60a5fa' }}
+                            label={{ value: 'RoR', angle: 90, position: 'insideRight', fill: '#60a5fa' }}
                             stroke="#60a5fa"
+                        />
+
+                        {/* Hidden Axis for Gas - Mapped to bottom half (0-2.6 is 0-50%) */}
+                        <YAxis
+                            yAxisId="gas"
+                            orientation="right"
+                            domain={[0, 5.2]}
+                            hide={true}
                         />
 
                         <Tooltip content={<CustomTooltip />} />
@@ -126,14 +133,14 @@ export const ChartBoard = () => {
 
                         {/* Gas Step - SECONDARY/Subtle */}
                         <Line
-                            yAxisId="right"
+                            yAxisId="gas"
                             type="stepAfter"
                             dataKey="gas"
                             name="Gas"
                             stroke="#94a3b8"
-                            strokeWidth={1}
+                            strokeWidth={2}
                             strokeDasharray="4 4"
-                            strokeOpacity={0.4}
+                            strokeOpacity={0.8}
                             dot={false}
                             isAnimationActive={false}
                         />

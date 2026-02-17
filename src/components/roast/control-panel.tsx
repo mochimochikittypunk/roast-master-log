@@ -8,73 +8,65 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { useState } from "react";
 import { Play, Square } from "lucide-react";
 
+import { toPng } from 'html-to-image';
+
 export const ControlPanel = () => {
     const {
         isRunning, start, stop,
         time, addReading, logEvent,
         currentGas, setGas,
         currentDamper, setDamper,
-        dataPoints, events, dtr,
-        // Use shared manual input
         manualTemp, setManualTemp
     } = useRoast();
 
-    // Save Dialog State
-    const [isSaveOpen, setIsSaveOpen] = useState(false);
-    const [roastTitle, setRoastTitle] = useState('');
-    const [beanWeight, setBeanWeight] = useState('200');
     const [isSaving, setIsSaving] = useState(false);
 
     const handleStart = () => {
         start();
-
-        // Use manualTemp as default/charge temp if available
         const val = parseFloat(manualTemp);
         const startTemp = !isNaN(val) ? val : 0;
-
         logEvent('Start', 0, startTemp, 'start');
-
         if (!isNaN(val)) {
             addReading(0, val);
             setManualTemp('');
         }
     };
 
-    const handleStop = () => {
+    const handleStop = async () => {
         stop();
         logEvent('Drop', time, 0, 'end');
-        setIsSaveOpen(true);
-    };
 
-    const handleSave = async () => {
         setIsSaving(true);
+        // Wait a bit for the DOM to update (e.g. chart re-render)
+        await new Promise(resolve => setTimeout(resolve, 500));
+
         try {
-            const payload = {
-                title: roastTitle,
-                weight: parseFloat(beanWeight),
-                startTime: Date.now(),
-                duration: time,
-                dtr: dtr,
-                dataPoints,
-                events
-            };
+            const dataUrl = await toPng(document.body, { cacheBust: true });
+            const blob = await (await fetch(dataUrl)).blob();
+            const filename = `roast-log-${Date.now()}.png`;
 
-            const res = await fetch('/api/roast/save', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-
-            if (res.ok) {
-                alert("Roast Saved!");
-                setIsSaveOpen(false);
-                setRoastTitle('');
+            // Check for Web Share API support (Mobile/Tablet)
+            if (navigator.share) {
+                const file = new File([blob], filename, { type: 'image/png' });
+                try {
+                    await navigator.share({
+                        files: [file],
+                        title: 'Roast Log',
+                        text: 'Roast Log Screenshot'
+                    });
+                } catch (shareError) {
+                    console.log('Share cancelled or failed', shareError);
+                }
             } else {
-                alert("Failed to save.");
+                // Fallback: Direct Download (PC)
+                const link = document.createElement('a');
+                link.download = filename;
+                link.href = dataUrl;
+                link.click();
             }
-        } catch (e) {
-            console.error(e);
-            alert("Error saving roast.");
+        } catch (err) {
+            console.error('Screenshot failed', err);
+            alert('Screenshot failed');
         } finally {
             setIsSaving(false);
         }
@@ -86,10 +78,6 @@ export const ControlPanel = () => {
             addReading(time, val);
             logEvent(name, time, val, type);
             setManualTemp('');
-            // Focus back to input?
-            // Since input is in Header, we might need a ref via Context if we want to force focus.
-            // But usually user clicks button, they might want to type again.
-            // For now, let's assume they just click back or "Add" also clears.
         } else {
             alert("Please enter temperature in the top bar first");
         }
@@ -103,8 +91,8 @@ export const ControlPanel = () => {
                         <Play className="mr-2" /> Start Roast
                     </Button>
                 ) : (
-                    <Button onClick={handleStop} variant="destructive" className="w-full h-14 text-lg">
-                        <Square className="mr-2" /> Drop / End
+                    <Button onClick={handleStop} variant="destructive" className="w-full h-14 text-lg" disabled={isSaving}>
+                        {isSaving ? <span className="animate-pulse">Saving...</span> : <><Square className="mr-2" /> Drop / End</>}
                     </Button>
                 )}
             </div>
@@ -132,59 +120,63 @@ export const ControlPanel = () => {
 
                     <div className="space-y-2 pt-4 border-t border-slate-800 grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <label className="text-xs text-slate-500 font-bold uppercase block text-center">Gas</label>
-                            <div className="flex gap-1 items-center justify-center">
-                                <Button onClick={() => setGas(Math.max(0, parseFloat((currentGas - 0.1).toFixed(1))))} size="icon" variant="outline" className="h-8 w-8">-</Button>
-                                <div className="w-12 text-center font-mono font-bold text-lg">{currentGas.toFixed(1)}</div>
-                                <Button onClick={() => setGas(parseFloat((currentGas + 0.1).toFixed(1)))} size="icon" variant="outline" className="h-8 w-8">+</Button>
+                            <label className="text-xs text-slate-500 font-bold uppercase block text-center">Gas (kPa / %)</label>
+                            <div className="flex flex-col gap-2">
+                                <div className="flex gap-1 items-center justify-center">
+                                    <Button onClick={() => setGas(Math.max(0, parseFloat((currentGas - 0.1).toFixed(1))))} size="icon" variant="outline" className="h-8 w-8">-</Button>
+                                    <div className="w-16 text-center font-mono font-bold text-lg">{currentGas.toFixed(1)}</div>
+                                    <Button onClick={() => setGas(parseFloat((currentGas + 0.1).toFixed(1)))} size="icon" variant="outline" className="h-8 w-8">+</Button>
+                                </div>
+                                <div className="flex items-center justify-center gap-2">
+                                    <Input
+                                        type="number"
+                                        className="w-16 h-8 text-center text-xs p-1"
+                                        placeholder="%"
+                                        value={currentGas > 0 ? Math.round((currentGas / 2.6) * 100) : ''}
+                                        onChange={(e) => {
+                                            const val = parseInt(e.target.value);
+                                            if (!isNaN(val)) {
+                                                const gas = (val / 100) * 2.6;
+                                                setGas(Math.round(gas * 100) / 100);
+                                            } else {
+                                                setGas(0);
+                                            }
+                                        }}
+                                    />
+                                    <span className="text-xs text-slate-500">%</span>
+                                </div>
                             </div>
                         </div>
                         <div className="space-y-2 border-l border-slate-800 pl-4">
-                            <label className="text-xs text-slate-500 font-bold uppercase block text-center">Damper (%)</label>
-                            <div className="flex gap-1 items-center justify-center">
-                                <Button onClick={() => setDamper(Math.max(0, currentDamper - 10))} size="icon" variant="outline" className="h-8 w-8">-</Button>
-                                <div className="w-12 text-center font-mono font-bold text-lg">{currentDamper}</div>
-                                <Button onClick={() => setDamper(Math.min(100, currentDamper + 10))} size="icon" variant="outline" className="h-8 w-8">+</Button>
+                            <label className="text-xs text-slate-500 font-bold uppercase block text-center">Damper (Level / %)</label>
+                            <div className="flex flex-col gap-2">
+                                <div className="flex gap-1 items-center justify-center">
+                                    <Button onClick={() => setDamper(Math.max(0, currentDamper - 10))} size="icon" variant="outline" className="h-8 w-8">-</Button>
+                                    <div className="w-16 text-center font-mono font-bold text-lg">{(currentDamper / 10).toFixed(1)}</div>
+                                    <Button onClick={() => setDamper(Math.min(100, currentDamper + 10))} size="icon" variant="outline" className="h-8 w-8">+</Button>
+                                </div>
+                                <div className="flex items-center justify-center gap-2">
+                                    <Input
+                                        type="number"
+                                        className="w-16 h-8 text-center text-xs p-1"
+                                        placeholder="%"
+                                        value={currentDamper}
+                                        onChange={(e) => {
+                                            const val = parseInt(e.target.value);
+                                            if (!isNaN(val)) {
+                                                setDamper(Math.min(100, Math.max(0, val)));
+                                            } else {
+                                                setDamper(0);
+                                            }
+                                        }}
+                                    />
+                                    <span className="text-xs text-slate-500">%</span>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </>
             )}
-
-            <Dialog open={isSaveOpen} onOpenChange={setIsSaveOpen}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Save Roast Log</DialogTitle>
-                    </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="title" className="text-right">Title</Label>
-                            <Input
-                                id="title"
-                                value={roastTitle}
-                                onChange={(e) => setRoastTitle(e.target.value)}
-                                className="col-span-3"
-                            />
-                        </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="weight" className="text-right">Weight (g)</Label>
-                            <Input
-                                id="weight"
-                                type="number"
-                                value={beanWeight}
-                                onChange={(e) => setBeanWeight(e.target.value)}
-                                className="col-span-3"
-                            />
-                        </div>
-                    </div>
-                    <DialogFooter>
-                        <Button variant="outline" onClick={() => setIsSaveOpen(false)}>Cancel</Button>
-                        <Button onClick={handleSave} disabled={isSaving}>
-                            {isSaving ? 'Saving...' : 'Save Log'}
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
         </div>
     );
 };
