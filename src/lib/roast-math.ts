@@ -17,7 +17,12 @@ export const calculateRoR = (
     const targetTime = currentTime - windowSeconds;
 
     // Simple approach: Find closest point
-    const pastPoint = history.find(p => p.timestamp >= targetTime);
+    let pastPoint = history.find(p => p.timestamp >= targetTime);
+
+    // If no point found within window (data is sparse), use the most recent point
+    if (!pastPoint && history.length > 0) {
+        pastPoint = history[history.length - 1];
+    }
 
     if (!pastPoint) return 0;
     if (pastPoint.timestamp === currentTime) return 0; // Avoid divide by zero if duplicate
