@@ -89,7 +89,8 @@ export const ChartBoard = () => {
                         <YAxis
                             yAxisId="right"
                             orientation="right"
-                            domain={[0, 20]}
+                            domain={[-20, 30]}
+                            allowDataOverflow={true}
                             label={{ value: 'RoR / Gas', angle: 90, position: 'insideRight', fill: '#60a5fa' }}
                             stroke="#60a5fa"
                         />
