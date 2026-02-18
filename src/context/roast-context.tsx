@@ -48,6 +48,8 @@ interface RoastContextType {
     // Bean Info
     beanName: string;
     setBeanName: (v: string) => void;
+    beanId: string | null;
+    setBeanId: (v: string | null) => void;
     beanWeight: string;
     setBeanWeight: (v: string) => void;
 }

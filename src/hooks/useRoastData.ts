@@ -12,6 +12,7 @@ export const useRoastData = () => {
     const [currentGas, setCurrentGas] = useState(0);
     const [currentDamper, setCurrentDamper] = useState(0); // 0-100%
     const [beanName, setBeanName] = useState('');
+    const [beanId, setBeanId] = useState<string | null>(null);
     const [beanWeight, setBeanWeight] = useState('');
     const [undoStack, setUndoStack] = useState<UndoAction[]>([]);
 
@@ -94,6 +95,8 @@ export const useRoastData = () => {
         currentDamper,
         beanName,
         setBeanName,
+        beanId,
+        setBeanId,
         beanWeight,
         setBeanWeight
     };

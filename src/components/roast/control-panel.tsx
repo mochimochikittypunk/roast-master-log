@@ -6,9 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useState } from "react";
-import { Play, Square } from "lucide-react";
+import { Play, Square, Flame, Fan, Calculator, RotateCcw, Save } from "lucide-react";
 
 import { toPng } from 'html-to-image';
+import { useAuth } from "@clerk/nextjs";
+import { createSupabaseClient } from "@/lib/supabase-client";
 
 export const ControlPanel = () => {
     const {
@@ -16,10 +18,12 @@ export const ControlPanel = () => {
         time, addReading, logEvent,
         currentGas, setGas,
         currentDamper, setDamper,
-        manualTemp, setManualTemp
+        manualTemp, setManualTemp,
+        beanId, beanWeight, beanName
     } = useRoast();
 
     const [isSaving, setIsSaving] = useState(false);
+    const { getToken, userId } = useAuth();
 
     const handleStart = () => {
         start();
@@ -35,6 +39,50 @@ export const ControlPanel = () => {
     const handleStop = async () => {
         stop();
         logEvent('Drop', time, 0, 'end');
+
+        // Inventory Deduction Logic
+        if (userId && beanId && beanWeight) {
+            const weightInGrams = parseFloat(beanWeight);
+            if (!isNaN(weightInGrams) && weightInGrams > 0) {
+                try {
+                    const token = await getToken({ template: 'supabase' });
+                    const supabase = await createSupabaseClient(token);
+
+                    // 1. Get current stock
+                    const { data: currentData, error: fetchError } = await supabase
+                        .from('inventory')
+                        .select('stock_weight_kg, name')
+                        .eq('id', beanId)
+                        .single();
+
+                    if (fetchError) {
+                        console.error("Failed to fetch current stock:", fetchError);
+                        alert(`在庫情報の取得に失敗しました: ${fetchError.message}`);
+                    } else if (currentData) {
+                        // 2. Calculate new stock (kg)
+                        // Input is in grams, DB is in kg.
+                        const deductionKg = weightInGrams / 1000;
+                        const newStockKg = currentData.stock_weight_kg - deductionKg;
+
+                        // 3. Update stock
+                        const { error: updateError } = await supabase
+                            .from('inventory')
+                            .update({ stock_weight_kg: newStockKg })
+                            .eq('id', beanId);
+
+                        if (updateError) {
+                            console.error("Failed to update stock:", updateError);
+                            alert(`在庫の更新に失敗しました: ${updateError.message}`);
+                        } else {
+                            console.log(`Inventory updated. Deduced ${deductionKg}kg from ${currentData.name}`);
+                            // alert(`${currentData.name}: ${weightInGrams}g を在庫から引き落としました。`);
+                        }
+                    }
+                } catch (err) {
+                    console.error("Unexpected error updating inventory:", err);
+                }
+            }
+        }
 
         setIsSaving(true);
         // Wait a bit for the DOM to update (e.g. chart re-render)
