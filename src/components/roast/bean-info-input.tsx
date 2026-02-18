@@ -15,7 +15,7 @@ type Bean = {
 import { AuthControl } from "@/components/roast/auth-control";
 
 export const BeanInfoInput = () => {
-    const { beanName, setBeanName, setBeanId, beanWeight, setBeanWeight } = useRoast();
+    const { beanName, setBeanName, beanId, setBeanId, beanWeight, setBeanWeight } = useRoast();
     const { getToken, userId } = useAuth();
     const [beans, setBeans] = useState<Bean[]>([]);
     const [loading, setLoading] = useState(false);
