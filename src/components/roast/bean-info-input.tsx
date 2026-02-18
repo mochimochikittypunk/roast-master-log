@@ -12,6 +12,8 @@ type Bean = {
     name: string;
 };
 
+import { AuthControl } from "@/components/roast/auth-control";
+
 export const BeanInfoInput = () => {
     const { beanName, setBeanName, setBeanId, beanWeight, setBeanWeight } = useRoast();
     const { getToken, userId } = useAuth();
@@ -101,6 +103,11 @@ export const BeanInfoInput = () => {
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-bold pointer-events-none">
                     g
                 </span>
+            </div>
+
+            {/* Auth Buttons - Desktop Only */}
+            <div className="ml-2 hidden lg:block">
+                <AuthControl />
             </div>
         </div>
     );

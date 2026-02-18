@@ -35,16 +35,7 @@ export default function RootLayout({
       <html lang="en">
         <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
           <header className="flex justify-end p-4 bg-slate-950 border-b border-slate-800 absolute top-0 right-0 z-50">
-            <SignedOut>
-              <SignInButton mode="modal">
-                <button className="text-sm font-medium text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-md transition-colors">
-                  Sign In (Inventory Sync)
-                </button>
-              </SignInButton>
-            </SignedOut>
-            <SignedIn>
-              <UserButton />
-            </SignedIn>
+            {/* Auth moved to BeanInfoInput */}
           </header>
           {children}
         </body>

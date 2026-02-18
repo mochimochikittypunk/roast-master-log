@@ -12,6 +12,7 @@ import { ManualInput } from "@/components/roast/manual-input";
 import { GuideDialog } from "@/components/roast/guide-dialog";
 import { BeanInfoInput } from "@/components/roast/bean-info-input";
 import { useRoast } from "@/context/roast-context";
+import { AuthControl } from "@/components/roast/auth-control";
 
 export default function RoastPage() {
     const [isMobileView, setIsMobileView] = useState(false);
@@ -46,11 +47,17 @@ export default function RoastPage() {
             </div>
 
             <div className="flex flex-col gap-4 h-[calc(100vh-2rem)]">
+
                 {/* Header / Timer Area */}
                 <div className={`${isMobileView ? 'flex-col items-stretch gap-4' : 'flex justify-between items-center'} bg-slate-900 p-4 rounded-xl border border-slate-800 shrink-0`}>
                     <div className={`flex items-center gap-4 ${isMobileView ? 'justify-between' : ''}`}>
                         <div className="flex flex-col">
-                            <h1 className={`${isMobileView ? 'text-xl' : 'text-2xl'} font-bold text-amber-500 whitespace-nowrap`}>Roast Master</h1>
+                            <div className="flex items-center gap-2">
+                                <h1 className={`${isMobileView ? 'text-xl' : 'text-2xl'} font-bold text-amber-500 whitespace-nowrap`}>Roast Master</h1>
+                                <div className="lg:hidden">
+                                    <AuthControl />
+                                </div>
+                            </div>
                             <span className="text-[10px] text-slate-600 font-mono">v{process.env.npm_package_version || '0.2.0'}</span>
                         </div>
                         {isMobileView && <TimerDisplay compact={true} />}
