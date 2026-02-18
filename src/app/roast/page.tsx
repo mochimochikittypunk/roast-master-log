@@ -49,7 +49,10 @@ export default function RoastPage() {
                 {/* Header / Timer Area */}
                 <div className={`${isMobileView ? 'flex-col items-stretch gap-4' : 'flex justify-between items-center'} bg-slate-900 p-4 rounded-xl border border-slate-800 shrink-0`}>
                     <div className={`flex items-center gap-4 ${isMobileView ? 'justify-between' : ''}`}>
-                        <h1 className={`${isMobileView ? 'text-xl' : 'text-2xl'} font-bold text-amber-500 whitespace-nowrap`}>Roast Master</h1>
+                        <div className="flex flex-col">
+                            <h1 className={`${isMobileView ? 'text-xl' : 'text-2xl'} font-bold text-amber-500 whitespace-nowrap`}>Roast Master</h1>
+                            <span className="text-[10px] text-slate-600 font-mono">v{process.env.npm_package_version || '0.2.0'}</span>
+                        </div>
                         {isMobileView && <TimerDisplay compact={true} />}
                     </div>
 
