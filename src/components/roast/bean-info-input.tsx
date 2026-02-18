@@ -59,19 +59,13 @@ export const BeanInfoInput = () => {
                 {userId ? (
                     <Combobox
                         items={comboboxItems}
-                        value={beanName} // Note: Combobox expects ID usually, but we are managing name primarily for display. 
-                        // However, our Combobox implementation compares by label if we pass name, 
-                        // or we should pass ID if we want to bind by ID.
-                        // Let's adjust usage: We want to store the ID but display the Name.
-                        // Existing Combobox implementation binds by 'value' (ID).
+                        value={beanId ?? ""}
                         onChange={(val) => {
-                            // val will be the ID from the item.value
                             const found = beans.find(b => b.id === val);
                             if (found) {
                                 setBeanName(found.name);
                                 setBeanId(found.id);
                             } else {
-                                // Cleared
                                 setBeanName("");
                                 setBeanId(null);
                             }
