@@ -11,6 +11,8 @@ export const useRoastData = () => {
     const [events, setEvents] = useState<RoastEvent[]>([]);
     const [currentGas, setCurrentGas] = useState(0);
     const [currentDamper, setCurrentDamper] = useState(0); // 0-100%
+    const [beanName, setBeanName] = useState('');
+    const [beanWeight, setBeanWeight] = useState('');
     const [undoStack, setUndoStack] = useState<UndoAction[]>([]);
 
     const addReading = useCallback((timestamp: number, temperature: number) => {
@@ -89,6 +91,10 @@ export const useRoastData = () => {
         resetData,
         undoLast,
         canUndo,
-        currentDamper
+        currentDamper,
+        beanName,
+        setBeanName,
+        beanWeight,
+        setBeanWeight
     };
 };

@@ -44,6 +44,12 @@ interface RoastContextType {
     // Undo
     undoLast: () => void;
     canUndo: boolean;
+
+    // Bean Info
+    beanName: string;
+    setBeanName: (v: string) => void;
+    beanWeight: string;
+    setBeanWeight: (v: string) => void;
 }
 
 const RoastContext = createContext<RoastContextType | null>(null);

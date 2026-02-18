@@ -10,6 +10,7 @@ import { ChartBoard } from "@/components/roast/chart-board";
 import { MetricsPanel } from "@/components/roast/metrics-panel";
 import { ManualInput } from "@/components/roast/manual-input";
 import { GuideDialog } from "@/components/roast/guide-dialog";
+import { BeanInfoInput } from "@/components/roast/bean-info-input";
 import { useRoast } from "@/context/roast-context";
 
 export default function RoastPage() {
@@ -44,12 +45,17 @@ export default function RoastPage() {
                 </Button>
             </div>
 
-            <div className={`grid gap-4 ${isMobileView ? 'grid-cols-1' : 'grid-cols-1 lg:grid-cols-4'}`}>
+            <div className="flex flex-col gap-4 h-[calc(100vh-2rem)]">
                 {/* Header / Timer Area */}
-                <div className={`${isMobileView ? 'col-span-1 flex-col items-stretch gap-4' : 'lg:col-span-4 flex justify-between items-center'} bg-slate-900 p-4 rounded-xl border border-slate-800`}>
+                <div className={`${isMobileView ? 'flex-col items-stretch gap-4' : 'flex justify-between items-center'} bg-slate-900 p-4 rounded-xl border border-slate-800 shrink-0`}>
                     <div className={`flex items-center gap-4 ${isMobileView ? 'justify-between' : ''}`}>
-                        <h1 className={`${isMobileView ? 'text-xl' : 'text-2xl'} font-bold text-amber-500`}>Roast Master</h1>
+                        <h1 className={`${isMobileView ? 'text-xl' : 'text-2xl'} font-bold text-amber-500 whitespace-nowrap`}>Roast Master</h1>
                         {isMobileView && <TimerDisplay compact={true} />}
+                    </div>
+
+                    {/* Middle Section: Bean Info */}
+                    <div className={`${isMobileView ? 'w-full' : 'flex-1 px-8'}`}>
+                        <BeanInfoInput />
                     </div>
 
                     <div className={`flex items-start gap-2 ${isMobileView ? 'justify-between' : 'items-center'}`}>
@@ -70,31 +76,37 @@ export default function RoastPage() {
                     </div>
                 </div>
 
-                {/* Main Chart Area */}
-                <div className={`${isMobileView ? (showMobileChart ? 'col-span-1 h-[350px]' : 'hidden') : 'lg:col-span-3 min-h-[500px]'} bg-slate-900 p-4 rounded-xl border border-slate-800 transition-all`}>
-                    <ChartBoard />
-                </div>
+                {/* Main Content Area - Flex on Desktop, Column on Mobile */}
+                <div className={`flex flex-1 min-h-0 overflow-hidden ${isMobileView ? 'flex-col gap-4 overflow-y-auto pb-20' : 'flex-row gap-3'}`}>
 
-                {/* Mobile Chart Toggle */}
-                {isMobileView && (
-                    <div className="col-span-1">
-                        <Button
-                            onClick={() => setShowMobileChart(!showMobileChart)}
-                            className="w-full bg-indigo-600 hover:bg-indigo-700"
-                        >
-                            {showMobileChart ? 'グラフを隠す' : 'グラフを表示'}
-                        </Button>
+                    {/* Main Chart Area */}
+                    <div className={`bg-slate-900 p-4 rounded-xl border border-slate-800 transition-all ${isMobileView ? (showMobileChart ? 'h-[350px] shrink-0' : 'hidden') : 'flex-1 h-full'}`}>
+                        <ChartBoard />
                     </div>
-                )}
 
-                {/* Controls & Metrics */}
-                <div className={`${isMobileView ? 'col-span-1' : 'lg:col-span-1'} flex flex-col gap-4 pb-20`}>
-                    {!isMobileView && <TimerDisplay />}
-                    <div className="bg-slate-900 p-4 rounded-xl border border-slate-800 flex-1">
-                        <MetricsPanel />
-                    </div>
-                    <div className="bg-slate-900 p-4 rounded-xl border border-slate-800">
-                        <ControlPanel />
+                    {/* Mobile Chart Toggle */}
+                    {isMobileView && (
+                        <div className="shrink-0">
+                            <Button
+                                onClick={() => setShowMobileChart(!showMobileChart)}
+                                className="w-full bg-indigo-600 hover:bg-indigo-700"
+                            >
+                                {showMobileChart ? 'グラフを隠す' : 'グラフを表示'}
+                            </Button>
+                        </div>
+                    )}
+
+                    {/* Controls & Metrics Sidebar */}
+                    <div className={`${isMobileView ? 'flex flex-col gap-4' : 'w-[320px] flex flex-col gap-4 h-full overflow-y-auto pr-2 shrink-0'}`}>
+                        {!isMobileView && <TimerDisplay />}
+
+                        <div className="bg-slate-900 p-4 rounded-xl border border-slate-800 shrink-0">
+                            <MetricsPanel />
+                        </div>
+
+                        <div className="bg-slate-900 p-4 rounded-xl border border-slate-800 shrink-0">
+                            <ControlPanel />
+                        </div>
                     </div>
                 </div>
             </div>

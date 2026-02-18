@@ -24,7 +24,7 @@ export const TimerDisplay = ({ compact = false }: { compact?: boolean }) => {
                     </div>
                 </div>
             )}
-            <div className={`font-mono font-bold tracking-tight text-slate-100 ${compact ? 'text-4xl' : 'text-6xl'}`}>
+            <div className={`font-mono font-bold tracking-tight text-slate-100 ${compact ? 'text-4xl' : 'text-4xl lg:text-5xl xl:text-6xl'} transition-all duration-300`}>
                 {formatTime(time)}
             </div>
         </div>
