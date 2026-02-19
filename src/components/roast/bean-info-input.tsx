@@ -1,24 +1,26 @@
 'use client';
 
+import { Keyboard, List } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { useRoast } from "@/context/roast-context";
 import { Input } from "@/components/ui/input";
 import { Combobox } from "@/components/ui/combobox";
 import { createSupabaseClient } from "@/lib/supabase-client";
 import { useAuth } from "@clerk/nextjs";
+import { AuthControl } from "@/components/roast/auth-control";
 
 type Bean = {
     id: string;
     name: string;
 };
 
-import { AuthControl } from "@/components/roast/auth-control";
-
 export const BeanInfoInput = () => {
     const { beanName, setBeanName, beanId, setBeanId, beanWeight, setBeanWeight } = useRoast();
     const { getToken, userId } = useAuth();
     const [beans, setBeans] = useState<Bean[]>([]);
     const [loading, setLoading] = useState(false);
+    const [isManualInput, setIsManualInput] = useState(false);
 
     useEffect(() => {
         const fetchBeans = async () => {
@@ -55,34 +57,50 @@ export const BeanInfoInput = () => {
 
     return (
         <div className="flex flex-col gap-2 w-full lg:w-auto lg:flex-row lg:items-center">
-            <div className="w-full lg:w-64">
-                {userId ? (
-                    <Combobox
-                        items={comboboxItems}
-                        value={beanId ?? ""}
-                        onChange={(val) => {
-                            const found = beans.find(b => b.id === val);
-                            if (found) {
-                                setBeanName(found.name);
-                                setBeanId(found.id);
-                            } else {
-                                setBeanName("");
-                                setBeanId(null);
-                            }
-                        }}
-                        placeholder={loading ? "読み込み中..." : "豆を選択"}
-                        searchPlaceholder="豆を検索..."
-                        emptyText="見つかりません"
-                        className="bg-slate-950 border-slate-700 text-base h-10 w-full justify-between"
-                    />
-                ) : (
-                    <Input
-                        type="text"
-                        placeholder="豆の名称 (ログインで在庫連携)"
-                        value={beanName}
-                        onChange={(e) => setBeanName(e.target.value)}
-                        className="bg-slate-950 border-slate-700 text-base h-10 w-full placeholder:text-slate-600"
-                    />
+            <div className="w-full lg:w-72 flex gap-2">
+                <div className="flex-1">
+                    {userId && !isManualInput ? (
+                        <Combobox
+                            items={comboboxItems}
+                            value={beanId ?? ""}
+                            onChange={(val) => {
+                                const found = beans.find(b => b.id === val);
+                                if (found) {
+                                    setBeanName(found.name);
+                                    setBeanId(found.id);
+                                } else {
+                                    setBeanName("");
+                                    setBeanId(null);
+                                }
+                            }}
+                            placeholder={loading ? "読み込み中..." : "豆を選択"}
+                            searchPlaceholder="豆を検索..."
+                            emptyText="見つかりません"
+                            className="bg-slate-950 border-slate-700 text-base h-10 w-full justify-between"
+                        />
+                    ) : (
+                        <Input
+                            type="text"
+                            placeholder={userId ? "豆の名称 (手入力)" : "豆の名称 (ログインで在庫連携)"}
+                            value={beanName}
+                            onChange={(e) => {
+                                setBeanName(e.target.value);
+                                if (userId) setBeanId(null); // Clear ID on manual edit
+                            }}
+                            className="bg-slate-950 border-slate-700 text-base h-10 w-full placeholder:text-slate-600"
+                        />
+                    )}
+                </div>
+                {userId && (
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => setIsManualInput(!isManualInput)}
+                        title={isManualInput ? "リストから選択" : "手入力に切り替え"}
+                        className="border-slate-700 bg-slate-900 shrink-0"
+                    >
+                        {isManualInput ? <List className="h-4 w-4" /> : <Keyboard className="h-4 w-4" />}
+                    </Button>
                 )}
             </div>
             <div className="relative w-full lg:w-32">

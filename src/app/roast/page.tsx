@@ -14,6 +14,8 @@ import { BeanInfoInput } from "@/components/roast/bean-info-input";
 import { useRoast } from "@/context/roast-context";
 import { AuthControl } from "@/components/roast/auth-control";
 
+import packageJson from '../../../package.json';
+
 export default function RoastPage() {
     const [isMobileView, setIsMobileView] = useState(false);
     const [showMobileChart, setShowMobileChart] = useState(false);
@@ -58,7 +60,7 @@ export default function RoastPage() {
                                     <AuthControl />
                                 </div>
                             </div>
-                            <span className="text-[10px] text-slate-600 font-mono">v{process.env.npm_package_version || '0.2.0'}</span>
+                            <span className="text-[10px] text-slate-600 font-mono">v{packageJson.version}</span>
                         </div>
                         {isMobileView && <TimerDisplay compact={true} />}
                     </div>

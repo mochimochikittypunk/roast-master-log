@@ -85,6 +85,24 @@ export const ChartBoard = () => {
                             stroke="#fbbf24"
                         />
 
+                        {/* Hidden Axis for Gas - Mapped to bottom half (0-2.6 is 0-50%) */}
+                        <YAxis
+                            yAxisId="gas"
+                            orientation="right"
+                            domain={[0, 5.2]}
+                            hide={true}
+                        />
+
+                        {/* Damper Axis - Bottom Half (0-100 scaled to 0-200 domain) - HIDDEN */}
+                        <YAxis
+                            yAxisId="damper"
+                            orientation="right"
+                            domain={[0, 200]}
+                            ticks={[0, 25, 50, 75, 100]}
+                            hide={true}
+                        />
+
+                        {/* RoR Axis - Visible, moved to be innermost */}
                         <YAxis
                             yAxisId="right"
                             orientation="right"
@@ -92,14 +110,6 @@ export const ChartBoard = () => {
                             allowDataOverflow={true}
                             label={{ value: 'RoR', angle: 90, position: 'insideRight', fill: '#60a5fa' }}
                             stroke="#60a5fa"
-                        />
-
-                        {/* Hidden Axis for Gas - Mapped to bottom half (0-2.6 is 0-50%) */}
-                        <YAxis
-                            yAxisId="gas"
-                            orientation="right"
-                            domain={[0, 5.2]}
-                            hide={true}
                         />
 
                         <Tooltip content={<CustomTooltip />} />
@@ -141,6 +151,18 @@ export const ChartBoard = () => {
                             strokeWidth={2}
                             strokeDasharray="4 4"
                             strokeOpacity={0.8}
+                            dot={false}
+                            isAnimationActive={false}
+                        />
+
+                        {/* Damper Line - ECG Style (Emerald) */}
+                        <Line
+                            yAxisId="damper"
+                            type="monotone"
+                            dataKey="damper"
+                            name="Damper"
+                            stroke="#10b981"
+                            strokeWidth={2}
                             dot={false}
                             isAnimationActive={false}
                         />

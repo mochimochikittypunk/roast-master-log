@@ -133,6 +133,65 @@ export const ControlPanel = () => {
 
     return (
         <div className="space-y-4">
+            {/* Gas and Damper Controls - Always Visible */}
+            <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                    <label className="text-[10px] text-slate-500 font-bold uppercase block text-center">Gas (kPa / %)</label>
+                    <div className="flex flex-col gap-2">
+                        <div className="flex gap-1 items-center justify-center">
+                            <Button onClick={() => setGas(Math.max(0, parseFloat((currentGas - 0.1).toFixed(1))))} size="icon" variant="outline" className="h-8 w-8">-</Button>
+                            <div className="w-16 text-center font-mono font-bold text-lg">{currentGas.toFixed(1)}</div>
+                            <Button onClick={() => setGas(parseFloat((currentGas + 0.1).toFixed(1)))} size="icon" variant="outline" className="h-8 w-8">+</Button>
+                        </div>
+                        <div className="flex items-center justify-center gap-2">
+                            <Input
+                                type="number"
+                                className="w-16 h-8 text-center text-xs p-1"
+                                placeholder="%"
+                                value={currentGas > 0 ? Math.round((currentGas / 2.6) * 100) : ''}
+                                onChange={(e) => {
+                                    const val = parseInt(e.target.value);
+                                    if (!isNaN(val)) {
+                                        const gas = (val / 100) * 2.6;
+                                        setGas(Math.round(gas * 100) / 100);
+                                    } else {
+                                        setGas(0);
+                                    }
+                                }}
+                            />
+                            <span className="text-xs text-slate-500">%</span>
+                        </div>
+                    </div>
+                </div>
+                <div className="space-y-2 border-l border-slate-800 pl-4">
+                    <label className="text-[10px] text-slate-500 font-bold uppercase block text-center">Damper (Level / %)</label>
+                    <div className="flex flex-col gap-2">
+                        <div className="flex gap-1 items-center justify-center">
+                            <Button onClick={() => setDamper(Math.max(0, currentDamper - 10))} size="icon" variant="outline" className="h-8 w-8">-</Button>
+                            <div className="w-16 text-center font-mono font-bold text-lg">{(currentDamper / 10).toFixed(1)}</div>
+                            <Button onClick={() => setDamper(Math.min(100, currentDamper + 10))} size="icon" variant="outline" className="h-8 w-8">+</Button>
+                        </div>
+                        <div className="flex items-center justify-center gap-2">
+                            <Input
+                                type="number"
+                                className="w-16 h-8 text-center text-xs p-1"
+                                placeholder="%"
+                                value={currentDamper > 0 ? currentDamper : ''}
+                                onChange={(e) => {
+                                    const val = parseInt(e.target.value);
+                                    if (!isNaN(val)) {
+                                        setDamper(Math.min(100, Math.max(0, val)));
+                                    } else {
+                                        setDamper(0);
+                                    }
+                                }}
+                            />
+                            <span className="text-xs text-slate-500">%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div className="flex gap-2">
                 {!isRunning ? (
                     <Button onClick={handleStart} className="w-full bg-green-600 hover:bg-green-700 h-14 text-lg">
@@ -164,64 +223,6 @@ export const ControlPanel = () => {
 
                     <div className="p-2 text-center text-xs text-slate-500">
                         Input temp at top bar, then click Event
-                    </div>
-
-                    <div className="space-y-2 pt-4 border-t border-slate-800 grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <label className="text-xs text-slate-500 font-bold uppercase block text-center">Gas (kPa / %)</label>
-                            <div className="flex flex-col gap-2">
-                                <div className="flex gap-1 items-center justify-center">
-                                    <Button onClick={() => setGas(Math.max(0, parseFloat((currentGas - 0.1).toFixed(1))))} size="icon" variant="outline" className="h-8 w-8">-</Button>
-                                    <div className="w-16 text-center font-mono font-bold text-lg">{currentGas.toFixed(1)}</div>
-                                    <Button onClick={() => setGas(parseFloat((currentGas + 0.1).toFixed(1)))} size="icon" variant="outline" className="h-8 w-8">+</Button>
-                                </div>
-                                <div className="flex items-center justify-center gap-2">
-                                    <Input
-                                        type="number"
-                                        className="w-16 h-8 text-center text-xs p-1"
-                                        placeholder="%"
-                                        value={currentGas > 0 ? Math.round((currentGas / 2.6) * 100) : ''}
-                                        onChange={(e) => {
-                                            const val = parseInt(e.target.value);
-                                            if (!isNaN(val)) {
-                                                const gas = (val / 100) * 2.6;
-                                                setGas(Math.round(gas * 100) / 100);
-                                            } else {
-                                                setGas(0);
-                                            }
-                                        }}
-                                    />
-                                    <span className="text-xs text-slate-500">%</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="space-y-2 border-l border-slate-800 pl-4">
-                            <label className="text-xs text-slate-500 font-bold uppercase block text-center">Damper (Level / %)</label>
-                            <div className="flex flex-col gap-2">
-                                <div className="flex gap-1 items-center justify-center">
-                                    <Button onClick={() => setDamper(Math.max(0, currentDamper - 10))} size="icon" variant="outline" className="h-8 w-8">-</Button>
-                                    <div className="w-16 text-center font-mono font-bold text-lg">{(currentDamper / 10).toFixed(1)}</div>
-                                    <Button onClick={() => setDamper(Math.min(100, currentDamper + 10))} size="icon" variant="outline" className="h-8 w-8">+</Button>
-                                </div>
-                                <div className="flex items-center justify-center gap-2">
-                                    <Input
-                                        type="number"
-                                        className="w-16 h-8 text-center text-xs p-1"
-                                        placeholder="%"
-                                        value={currentDamper}
-                                        onChange={(e) => {
-                                            const val = parseInt(e.target.value);
-                                            if (!isNaN(val)) {
-                                                setDamper(Math.min(100, Math.max(0, val)));
-                                            } else {
-                                                setDamper(0);
-                                            }
-                                        }}
-                                    />
-                                    <span className="text-xs text-slate-500">%</span>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </>
             )}
