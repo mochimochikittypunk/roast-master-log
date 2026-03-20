@@ -75,7 +75,19 @@ export const ControlPanel = () => {
                             alert(`在庫の更新に失敗しました: ${updateError.message}`);
                         } else {
                             console.log(`Inventory updated. Deduced ${deductionKg}kg from ${currentData.name}`);
-                            // alert(`${currentData.name}: ${weightInGrams}g を在庫から引き落としました。`);
+                            
+                            // 4. Record consumption in history for analytics
+                            const { error: historyError } = await supabase.from('inventory_history').insert({
+                                user_id: userId,
+                                inventory_item_id: beanId,
+                                item_name: currentData.name,
+                                type: 'CONSUME',
+                                amount_delta: -deductionKg
+                            });
+
+                            if (historyError) {
+                                console.error("Failed to write to inventory_history:", historyError);
+                            }
                         }
                     }
                 } catch (err) {
